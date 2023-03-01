@@ -29,6 +29,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
 
+
+
                     //val nftViewModel: NftViewModel = hiltViewModel()
                     
                    // MainScreen(nftViewModel = nftViewModel)
