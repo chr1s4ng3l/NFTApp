@@ -1,5 +1,7 @@
 package com.example.nftapp.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nftapp.model.Asset
@@ -19,9 +21,9 @@ class NftViewModel @Inject constructor(private val nftRepository: NftRepositoryI
 
     var selectedAsset: AssetsDomain? = null
 
-    private val _asset: MutableStateFlow<UIState<List<AssetsDomain>>> =
-        MutableStateFlow(UIState.LOADING)
-    val asset: StateFlow<UIState<List<AssetsDomain>>> get() = _asset
+    private val _asset: MutableLiveData<UIState<List<AssetsDomain>>> =
+        MutableLiveData(UIState.LOADING)
+    val asset: LiveData<UIState<List<AssetsDomain>>> get() = _asset
 
 
     init {

@@ -1,19 +1,28 @@
 package com.example.nftapp.rest
 
+import android.util.Log
 import com.example.nftapp.model.domain.AssetsDomain
 import com.example.nftapp.model.domain.mapToDomainAssets
 import com.example.nftapp.utils.FailureResponse
 import com.example.nftapp.utils.NullAssetsResponse
 import com.example.nftapp.utils.UIState
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
+
+
+private const val TAG = "NftRepository"
 
 interface NftRepository {
     suspend fun getAssets(): Flow<UIState<List<AssetsDomain>>>
 }
 
-class NftRepositoryImp @Inject constructor(private val nftApi: NFTApi) : NftRepository {
+class NftRepositoryImp @Inject constructor(
+    private val nftApi: NFTApi, private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+) : NftRepository {
     override suspend fun getAssets(): Flow<UIState<List<AssetsDomain>>> = flow {
         emit(UIState.LOADING)
 
@@ -24,7 +33,7 @@ class NftRepositoryImp @Inject constructor(private val nftApi: NFTApi) : NftRepo
 
 
                     emit(UIState.SUCCESS(it.assets.mapToDomainAssets()))
-
+                    Log.d(TAG, "getAssets: ${response}")
 
                 } ?: throw NullAssetsResponse()
             } else throw FailureResponse(response.errorBody().toString())
@@ -34,6 +43,6 @@ class NftRepositoryImp @Inject constructor(private val nftApi: NFTApi) : NftRepo
             emit(UIState.ERROR(e))
         }
 
-    }
+    }.flowOn(ioDispatcher)
 
 }
