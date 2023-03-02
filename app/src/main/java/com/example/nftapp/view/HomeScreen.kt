@@ -2,15 +2,18 @@ package com.example.nftapp.view
 
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -19,22 +22,43 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.nftapp.R
 import com.example.nftapp.model.domain.AssetsDomain
+import com.example.nftapp.utils.UIState
+import com.example.nftapp.viewmodel.NftViewModel
+
+
+@Composable
+fun AssetsScreen(nftViewModel: NftViewModel) {
+    val state = nftViewModel.asset.observeAsState(UIState.LOADING).value
+    when (state) {
+        is UIState.LOADING -> {}
+        is UIState.SUCCESS -> {
+            AssetList(state.response)
+        }
+        is UIState.ERROR -> {}
+    }
+}
 
 @Composable
 fun AssetList(
     assets: List<AssetsDomain>,
-    selectedAsset: (AssetsDomain) -> Unit
+    selectedAsset: ((AssetsDomain) -> Unit)? = null
 ) {
-    LazyColumn {
-        itemsIndexed(items = assets) { index, asset ->
-            AssetItem(asset = asset, selectedAsset)
-        }
+
+    Column(Modifier.background(color = Color.Black)) {
+        LazyVerticalGrid(columns = GridCells.Fixed(2), content = {
+            itemsIndexed(items = assets) { index, asset ->
+                AssetItem(asset = asset, selectedAsset)
+            }
+        })
     }
+
+
 }
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalUnitApi::class, ExperimentalFoundationApi::class)
@@ -45,36 +69,52 @@ fun AssetItem(
 ) {
 
 
-    Card(
+    Column(
         modifier = Modifier
-            .padding(horizontal = 10.dp, vertical = 10.dp)
-            .fillMaxWidth(),
-        elevation = 10.dp,
-        backgroundColor = Color.White,
-        shape = RoundedCornerShape(corner = CornerSize(16.dp))
+            .padding(horizontal = 5.dp, vertical = 5.dp)
+            .background(
+                Color(0xFF232325),
+                shape = RoundedCornerShape(corner = CornerSize(16.dp))
+            )
     ) {
-        Row{
+        Card(
+            modifier = Modifier
+                .padding(horizontal = 7.dp, vertical = 7.dp),
+            elevation = 10.dp,
+            backgroundColor = Color(0xFF232325),
+            shape = RoundedCornerShape(corner = CornerSize(16.dp))
+        ) {
+
+
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(asset.image_thumbnail_url)
                     .crossfade(true)
                     .build(),
-                placeholder = painterResource(R.drawable.nft),
+                placeholder = painterResource(R.drawable.loading_image),
                 contentDescription = stringResource(R.string.app_name),
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.size(100.dp).clip(RoundedCornerShape(10.dp))
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(10.dp))
+
             )
-
-                Text(
-                    text = asset.name,
-                    color = Color.Black,
-                    fontSize = TextUnit(25F, TextUnitType.Sp),
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.fillMaxWidth().padding(30.dp)
-
-                )
 
 
         }
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp, vertical = 5.dp)) {
+            Text(
+                text = asset.name,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.White,
+                fontSize = 18.sp,
+                textAlign = TextAlign.End
+            )
+        }
+
+
     }
+
 }
