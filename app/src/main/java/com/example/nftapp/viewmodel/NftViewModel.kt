@@ -19,11 +19,14 @@ import javax.inject.Inject
 @HiltViewModel
 class NftViewModel @Inject constructor(private val nftRepository: NftRepositoryImp) : ViewModel() {
 
+
     var selectedAsset: AssetsDomain? = null
 
     private val _asset: MutableLiveData<UIState<List<AssetsDomain>>> =
         MutableLiveData(UIState.LOADING)
     val asset: LiveData<UIState<List<AssetsDomain>>> get() = _asset
+
+    var isLoading = MutableLiveData<Boolean>()
 
 
     init {
@@ -32,9 +35,11 @@ class NftViewModel @Inject constructor(private val nftRepository: NftRepositoryI
     }
 
     private fun getAsset() {
+        isLoading.value = true
         viewModelScope.launch {
             nftRepository.getAssets().collect(){
                 _asset.value = it
+                isLoading.value = false
             }
         }
     }

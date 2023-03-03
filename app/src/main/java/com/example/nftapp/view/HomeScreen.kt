@@ -1,7 +1,6 @@
 package com.example.nftapp.view
 
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -10,6 +9,7 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.nftapp.R
@@ -33,12 +34,13 @@ import com.example.nftapp.viewmodel.NftViewModel
 
 
 @Composable
-fun AssetsScreen(nftViewModel: NftViewModel) {
-    val state = nftViewModel.asset.observeAsState(UIState.LOADING).value
-    when (state) {
+fun AssetsScreen(nftViewModel: NftViewModel, navController: NavController) {
+    when (val state = nftViewModel.asset.observeAsState(UIState.LOADING).value) {
         is UIState.LOADING -> {}
         is UIState.SUCCESS -> {
-            AssetList(state.response)
+            AssetList(state.response, navController){
+                nftViewModel.selectedAsset = it
+            }
         }
         is UIState.ERROR -> {}
     }
@@ -47,13 +49,15 @@ fun AssetsScreen(nftViewModel: NftViewModel) {
 @Composable
 fun AssetList(
     assets: List<AssetsDomain>,
+    navController: NavController? = null,
     selectedAsset: ((AssetsDomain) -> Unit)? = null
+
 ) {
 
     Column(Modifier.background(color = Color.Black)) {
         LazyVerticalGrid(columns = GridCells.Fixed(2), content = {
             itemsIndexed(items = assets) { index, asset ->
-                AssetItem(asset = asset, selectedAsset)
+                AssetItem(asset = asset, navController, selectedAsset)
             }
         })
     }
@@ -61,11 +65,13 @@ fun AssetList(
 
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalUnitApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AssetItem(
     asset: AssetsDomain,
+    navController: NavController? = null,
     selectedAsset: ((AssetsDomain) -> Unit)? = null
+
 ) {
 
 
@@ -82,7 +88,11 @@ fun AssetItem(
                 .padding(horizontal = 7.dp, vertical = 7.dp),
             elevation = 10.dp,
             backgroundColor = Color(0xFF232325),
-            shape = RoundedCornerShape(corner = CornerSize(16.dp))
+            shape = RoundedCornerShape(corner = CornerSize(16.dp)),
+            onClick = {
+                selectedAsset?.invoke(asset)
+                navController?.navigate("details")
+            }
         ) {
 
 
@@ -102,9 +112,11 @@ fun AssetItem(
 
 
         }
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 10.dp, vertical = 5.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp, vertical = 5.dp)
+        ) {
             Text(
                 text = asset.name,
                 fontWeight = FontWeight.ExtraBold,
@@ -113,7 +125,6 @@ fun AssetItem(
                 textAlign = TextAlign.End
             )
         }
-
 
     }
 
