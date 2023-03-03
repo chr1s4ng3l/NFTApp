@@ -11,11 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.nftapp.model.Collection
 import com.example.nftapp.model.domain.AssetsDomain
 import com.example.nftapp.ui.theme.NFTAppTheme
 import com.example.nftapp.view.AssetList
 import com.example.nftapp.view.AssetsScreen
+import com.example.nftapp.view.MyDetails
 import com.example.nftapp.viewmodel.NftViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,9 +36,17 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
+                    val navController = rememberNavController()
+                    val nftViewModel: NftViewModel = hiltViewModel()
+                    NavHost(navController = navController, startDestination = "main") {
+                        composable("main") {
+                            AssetsScreen(nftViewModel = nftViewModel, navController)
 
-                        val nftViewModel: NftViewModel = hiltViewModel()
-                        AssetsScreen(nftViewModel = nftViewModel)
+                        }
+                        composable("details") {
+                            MyDetails(nftViewModel = nftViewModel)
+                        }
+                    }
 
 
                 }
