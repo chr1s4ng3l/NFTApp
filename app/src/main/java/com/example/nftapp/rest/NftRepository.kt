@@ -2,7 +2,9 @@ package com.example.nftapp.rest
 
 import android.util.Log
 import com.example.nftapp.model.domain.AssetsDomain
+import com.example.nftapp.model.domain.CollectionDomain
 import com.example.nftapp.model.domain.mapToDomainAssets
+import com.example.nftapp.model.domain.mapToDomainCollections
 import com.example.nftapp.utils.FailureResponse
 import com.example.nftapp.utils.NullAssetsResponse
 import com.example.nftapp.utils.UIState
@@ -17,23 +19,23 @@ import javax.inject.Inject
 private const val TAG = "NftRepository"
 
 interface NftRepository {
-    suspend fun getAssets(): Flow<UIState<List<AssetsDomain>>>
+    suspend fun getAssets(slug: String): Flow<UIState<List<AssetsDomain>>>
+    suspend fun getCollections(): Flow<UIState<List<CollectionDomain>>>
 }
 
 class NftRepositoryImp @Inject constructor(
     private val nftApi: NFTApi, private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : NftRepository {
-    override suspend fun getAssets(): Flow<UIState<List<AssetsDomain>>> = flow {
+    override suspend fun getAssets(slug: String): Flow<UIState<List<AssetsDomain>>> = flow {
         emit(UIState.LOADING)
 
         try {
-            val response = nftApi.getAssets()
+            val response = nftApi.getAssets(slug)
             if (response.isSuccessful) {
                 response.body()?.let {
 
-
                     emit(UIState.SUCCESS(it.assets.mapToDomainAssets()))
-                    Log.d(TAG, "getAssets: ${response}")
+                    Log.d(TAG, "getAssets: $response")
 
                 } ?: throw NullAssetsResponse()
             } else throw FailureResponse(response.errorBody().toString())
@@ -44,5 +46,28 @@ class NftRepositoryImp @Inject constructor(
         }
 
     }.flowOn(ioDispatcher)
+
+
+    override suspend fun getCollections(): Flow<UIState<List<CollectionDomain>>> =
+        flow<UIState<List<CollectionDomain>>> {
+            emit(UIState.LOADING)
+
+            try {
+                val response = nftApi.getCollections()
+                if (response.isSuccessful) {
+                    response.body()?.let {
+
+                        emit(UIState.SUCCESS(it.collections.mapToDomainCollections()))
+                        Log.d(TAG, "getCollections: $response")
+                    } ?: throw NullAssetsResponse()
+
+                } else throw FailureResponse(response.errorBody().toString())
+
+
+            } catch (e: Exception) {
+                emit(UIState.ERROR(e))
+            }
+
+        }.flowOn(ioDispatcher)
 
 }

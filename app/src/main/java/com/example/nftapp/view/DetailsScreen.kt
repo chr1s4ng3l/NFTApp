@@ -32,7 +32,7 @@ fun MyDetails(nftViewModel: NftViewModel) {
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(id = R.drawable.nft),
-            contentScale = ContentScale.FillBounds,
+                contentScale = ContentScale.Crop,
             contentDescription = "ImageDetails",
             modifier = Modifier
                 .fillMaxWidth()
@@ -41,13 +41,15 @@ fun MyDetails(nftViewModel: NftViewModel) {
 
 
         Column(Modifier.padding(10.dp)) {
-            Text(
-                text = asset?.name ?: "Name no available",
-                fontSize = 25.sp,
-                textDecoration = TextDecoration.Underline,
-                fontWeight = FontWeight.ExtraBold
-            )
-
+            Row() {
+                Text(text = "#", fontSize = 25.sp, fontWeight = FontWeight.ExtraBold)
+                Text(
+                    text = asset?.tokenId ?: "TokenId no available",
+                    fontSize = 25.sp,
+                    textDecoration = TextDecoration.Underline,
+                    fontWeight = FontWeight.ExtraBold
+                )
+            }
 
             Text(
                 text = asset?.collection?.description ?: "Description no available",
