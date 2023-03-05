@@ -17,9 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.nftapp.model.Collection
 import com.example.nftapp.model.domain.AssetsDomain
 import com.example.nftapp.ui.theme.NFTAppTheme
-import com.example.nftapp.view.AssetList
-import com.example.nftapp.view.AssetsScreen
-import com.example.nftapp.view.MyDetails
+import com.example.nftapp.view.*
 import com.example.nftapp.viewmodel.NftViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,11 +36,16 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
                     val nftViewModel: NftViewModel = hiltViewModel()
-                    NavHost(navController = navController, startDestination = "main") {
-                        composable("main") {
+                    NavHost(navController = navController, startDestination = "assets") {
+//                        composable("collections") {
+//                            CollectionScreen(nftViewModel = nftViewModel, navController)
+//
+//                        }
+                        composable("assets") {
                             AssetsScreen(nftViewModel = nftViewModel, navController)
 
                         }
+
                         composable("details") {
                             MyDetails(nftViewModel = nftViewModel)
                         }
