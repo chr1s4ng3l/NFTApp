@@ -38,13 +38,12 @@ class NftViewModel @Inject constructor(private val nftRepository: NftRepositoryI
 
     val slug = selectedCollection?.slug
 
-    private fun getAsset() {
-
+     fun getAsset() {
             viewModelScope.launch {
-                nftRepository.getAssets("mutant-ape-yacht-club").collect() {
+                nftRepository.getAssets().collect() {
                     _asset.value = it
 
-            }
+                }
         }
 
 

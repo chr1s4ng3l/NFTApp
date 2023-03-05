@@ -12,7 +12,7 @@ interface NFTApi {
 
     @GET(ASSET_PATH)
     suspend fun getAssets(
-        @Query("collection_slug") collection_slug: String,
+        @Query("collection_slug") collection_slug: String = "clonex",
         @Query("order_direction") order_direction: String = "desc",
         @Query("limit") limit: Int = 200,
         @Query("include_orders") include_orders: Boolean = false,
@@ -21,8 +21,9 @@ interface NFTApi {
 
     @GET(COLLECTION_PATH)
     suspend fun getCollections(
-        @Query("offset") offset: Int = 1,
-        @Query("limit") limit: Int = 300
+          //@Query("asset_owner") asset_owner: String = "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb",
+         // @Query("offset") offset: Int = 1,
+          @Query("limit") limit: Int = 300
     ): Response<CollectionsResponse>
 
     companion object {

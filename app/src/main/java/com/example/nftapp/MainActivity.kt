@@ -36,11 +36,11 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
                     val nftViewModel: NftViewModel = hiltViewModel()
-                    NavHost(navController = navController, startDestination = "collections") {
-                        composable("collections") {
-                            CollectionScreen(nftViewModel = nftViewModel, navController)
-
-                        }
+                    NavHost(navController = navController, startDestination = "assets") {
+//                        composable("collections") {
+//                            CollectionScreen(nftViewModel = nftViewModel, navController)
+//
+//                        }
                         composable("assets") {
                             AssetsScreen(nftViewModel = nftViewModel, navController)
 

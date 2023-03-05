@@ -19,18 +19,18 @@ import javax.inject.Inject
 private const val TAG = "NftRepository"
 
 interface NftRepository {
-    suspend fun getAssets(slug: String): Flow<UIState<List<AssetsDomain>>>
+    suspend fun getAssets(): Flow<UIState<List<AssetsDomain>>>
     suspend fun getCollections(): Flow<UIState<List<CollectionDomain>>>
 }
 
 class NftRepositoryImp @Inject constructor(
     private val nftApi: NFTApi, private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : NftRepository {
-    override suspend fun getAssets(slug: String): Flow<UIState<List<AssetsDomain>>> = flow {
+    override suspend fun getAssets(): Flow<UIState<List<AssetsDomain>>> = flow {
         emit(UIState.LOADING)
 
         try {
-            val response = nftApi.getAssets(slug)
+            val response = nftApi.getAssets()
             if (response.isSuccessful) {
                 response.body()?.let {
 
