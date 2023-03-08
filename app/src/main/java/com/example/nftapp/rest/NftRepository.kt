@@ -33,9 +33,9 @@ class NftRepositoryImp @Inject constructor(
             val response = nftApi.getAssets()
             if (response.isSuccessful) {
                 response.body()?.let {
-
+                    Log.d(TAG, "Response -> $response")
+                    Log.d(TAG, "Response Body -> ${it}")
                     emit(UIState.SUCCESS(it.assets.mapToDomainAssets()))
-                    Log.d(TAG, "getAssets: $response")
 
                 } ?: throw NullAssetsResponse()
             } else throw FailureResponse(response.errorBody().toString())
@@ -58,6 +58,7 @@ class NftRepositoryImp @Inject constructor(
                     response.body()?.let {
 
                         emit(UIState.SUCCESS(it.collections.mapToDomainCollections()))
+                        Log.d(TAG, "getCollections: $response")
                         Log.d(TAG, "getCollections: $response")
                     } ?: throw NullAssetsResponse()
 

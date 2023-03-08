@@ -1,5 +1,6 @@
 package com.example.nftapp.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,6 +13,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.log
+
+private const val TAG = "NftViewModel"
 
 @HiltViewModel
 class NftViewModel @Inject constructor(private val nftRepository: NftRepositoryImp) : ViewModel() {
@@ -42,6 +46,7 @@ class NftViewModel @Inject constructor(private val nftRepository: NftRepositoryI
             viewModelScope.launch {
                 nftRepository.getAssets().collect() {
                     _asset.value = it
+                    Log.d(TAG, "getAsset: $it")
 
                 }
         }
